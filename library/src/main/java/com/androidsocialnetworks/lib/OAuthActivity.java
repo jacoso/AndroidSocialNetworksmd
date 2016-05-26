@@ -1,6 +1,8 @@
 package com.androidsocialnetworks.lib;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
 
 public class OAuthActivity extends Activity {
 
@@ -64,10 +67,25 @@ public class OAuthActivity extends Activity {
                 return super.shouldOverrideUrlLoading(view, url);
             }
 
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
+			@Override
+			public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+				final AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+				builder.setMessage("Acceso invalidado");
+				builder.setPositiveButton("continue", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						handler.proceed();
+					}
+				});
+				builder.setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						handler.cancel();
+					}
+				});
+				final AlertDialog dialog = builder.create();
+				dialog.show();
+			}
 
             @Override
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
